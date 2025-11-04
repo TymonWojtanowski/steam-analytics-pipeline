@@ -47,27 +47,31 @@ source .venv/bin/activate
 
 # Install Python dependencies
 pip install -r requirements.txt
+```
 2. Configure Your Environment
 This project requires API keys and passwords, which are safely managed using a .env file.
 
 Create your secret file:
 
-Bash
+```bash
 
 # This copies the example file. Never commit the .env file!
 cp .env.example .env
+```
 Edit the .env file with your favorite editor (e.g., nano .env) and fill in your credentials:
 
-Ini, TOML
+```ini, TOML
 
 STEAM_API_KEY="YOUR_SECRET_STEAM_KEY"
 DB_PASSWORD="YOUR_CHOSEN_STRONG_PASSWORD"
+```
 3. Launch Services
 This one command will start your PostgreSQL database and your Apache Superset instance.
 
-Bash
+```bash
 
 docker-compose up -d
+```
 PostgreSQL will be available at localhost:5432.
 
 Apache Superset will be available at http://localhost:8088 (login: admin, pass: admin).
@@ -77,25 +81,27 @@ Create the Database Schema: Connect to your database (e.g., using DataGrip) and 
 
 Run the One-Time Bootstrap Script: This script populates your raw_steam_games table with the games you want to track.
 
-Bash
+```bash
 
 python bootstrap_games.py
 Run the Transformation Layer: Go into the dbt project folder and run your models. This will build your clean Star Schema (dim_ and fct_ tables).
 
-Bash
+```bash
 
 cd dbt_steam_analytics
 dbt run
-cd .. 
+cd ..
+```
 Set Up the Scheduler: Run the extraction script once manually to test it, then set it up in cron to run automatically.
 
-Bash
+```bash
 
 # Manual test run
 python extract_player_counts.py
 
 # Add to crontab (edit paths as needed)
 (crontab -l 2>/dev/null; echo "0 * * * * /path/to/your/project/.venv/bin/python /path/to/your/project/extract_player_counts.py >> /path/to/your/project/cron.log 2>&1") | crontab -
+```
 5. View Your Dashboard
 Go to http://localhost:8088 and log in to Superset.
 
