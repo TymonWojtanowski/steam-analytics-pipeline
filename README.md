@@ -112,6 +112,7 @@ Add your clean dbt tables (dim_games, fct_player_counts) as Datasets.
 Build your charts and dashboard!
 
 📁 Project Structure
+```bash
 .
 ├── dbt_steam_analytics/  # Contains the dbt project for all SQL transformations
 │   ├── models/
@@ -127,3 +128,4 @@ Build your charts and dashboard!
 ├── README.md             # This file
 ├── requirements.txt      # Python dependencies
 └── schema.sql            # SQL script to create the initial raw tables
+```
