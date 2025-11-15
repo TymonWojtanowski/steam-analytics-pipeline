@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  postgres_steam_db:
+    image: postgres:17
+    container_name: steam_project_postgres_data
+    restart: no
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: steam_analytics
+    ports:
+      - "5432:5432"
+    volumes:
+      - steam_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d steam_analytics"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres_superset_db:
+    image: postgres:17
+    container_name: steam_project_postgres_superset
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: superset_metadata
+    volumes:
+      - superset_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d superset_metadata" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis_cache:
+    image: redis:7
+    container_name: steam_project_redis_cache
+    volumes:
+      - superset_cache_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  superset_app:
+    image: apache/superset
+    container_name: steam_project_superset_app
+    ports:
+      - "8088:8088"
+    depends_on:
+      postgres_superset_db:
+        condition: service_healthy
+      redis_cache:
+        condition: service_healthy
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+      SUPERSET_DATABASE_HOST: postgres_superset_db
+      SUPERSET_DATABASE_PORT: '5432'
+      SUPERSET_DATABASE_DB: superset_metadata
+      SUPERSET_DATABASE_USER: ${DB_USER}
+      SUPERSET_DATABASE_PASSWORD: ${DB_PASSWORD}
+      SUPERSET_REDIS_HOST: redis_cache
+      SUPERSET_REDIS_PORT: '6379'
+      SUPERSET_ADMIN_USERNAME: admin
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD}
+      SUPERSET_ADMIN_EMAIL: admin@superset.com
+    volumes:
+      - superset_app_data:/app/superset_home
+
+volumes:
+  steam_db_data:
+  superset_db_data:
+  superset_cache_data:
+  superset_app_data:

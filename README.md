@@ -64,6 +64,9 @@ Edit the .env file with your favorite editor (e.g., nano .env) and fill in your 
 
 STEAM_API_KEY="YOUR_SECRET_STEAM_KEY"
 DB_PASSWORD="YOUR_CHOSEN_STRONG_PASSWORD"
+DB_USER="postgres"
+SUPERSET_ADMIN_PASSWORD="YOUR_CHOSEN_STRONG_PASSWORD"
+SUPERSET_SECRET_KEY="YOUR_GENERATED_SECRET_KEY"
 ```
 3. Launch Services
 This one command will start your PostgreSQL database and your Apache Superset instance.
